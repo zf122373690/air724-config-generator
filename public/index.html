@@ -39,6 +39,7 @@
     <g id="i-send" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></g>
     <g id="i-edit" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></g>
     <g id="i-grid" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></g>
+    <g id="i-cloud" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></g>
   </defs>
 </svg>
 
@@ -66,14 +67,27 @@
 
 <!-- Hero -->
 <section class="hero">
-  <h1>离线配置生成器 <span class="tag" style="font-size:.7rem;vertical-align:middle">录音 + 对端TTS + 推送/上传</span></h1>
-  <p>纯前端本地生成：实时预览 Lua 明文，并加密导出 <code style="font-family:var(--mono)">config.bin</code>（直接放 U 盘根目录）。所有计算都在你的浏览器完成，不上传任何数据。</p>
-  <div class="steps">
-    <div class="step"><span class="num">1</span><div><div class="t">填写配置</div><div class="s">基础 / 语音</div></div></div>
-    <div class="step s2"><span class="num">2</span><div><div class="t">选择渠道</div><div class="s">通知策略</div></div></div>
-    <div class="step s3"><span class="num">3</span><div><div class="t">生成下载</div><div class="s">写入 U 盘</div></div></div>
+  <div class="hero-inner">
+    <h1>离线配置生成器</h1>
+    <p>纯前端本地生成：实时预览 Lua 明文，加密导出 <code>config.bin</code>，直接放入 U 盘根目录。所有计算都在浏览器完成，数据不出本机。</p>
+    <div class="steps">
+      <div class="step"><span class="num">1</span><div><div class="t">语音与通话</div><div class="s">录音 · TTS · 语音消息</div></div></div>
+      <div class="step"><span class="num">2</span><div><div class="t">通知渠道</div><div class="s">按需启用推送</div></div></div>
+      <div class="step"><span class="num">3</span><div><div class="t">短信与系统</div><div class="s">白名单 · 音量</div></div></div>
+      <div class="step"><span class="num">4</span><div><div class="t">生成下载</div><div class="s">写入 U 盘</div></div></div>
+    </div>
   </div>
 </section>
+
+<!-- 分区导航 -->
+<nav class="section-nav" id="sectionNav" aria-label="配置分区导航">
+  <div class="nav-inner">
+    <a href="#sec-voice" class="nav-chip active" data-sec="sec-voice"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg> 语音与通话</a>
+    <a href="#sec-notify" class="nav-chip" data-sec="sec-notify"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg> 通知渠道</a>
+    <a href="#sec-system" class="nav-chip" data-sec="sec-system"><svg viewBox="0 0 24 24"><use href="#i-settings"></use></svg> 短信与系统</a>
+    <a href="#sec-output" class="nav-chip" data-sec="sec-output"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg> 生成下载</a>
+  </div>
+</nav>
 
 <!-- 资源入口 -->
 <section class="resources">
@@ -96,17 +110,22 @@
   <!-- 左侧表单 -->
   <div>
     <form id="configForm" autocomplete="off">
-      <!-- 通话/短信/系统配置 -->
-      <div class="card">
-        <div class="card-header"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-settings"></use></svg></span> 通话 / 短信 / 系统配置</div>
+
+      <!-- ============ 1. 语音与通话 ============ -->
+      <div class="card fade-up" id="sec-voice">
+        <div class="card-header">
+          <span class="index">01</span>
+          <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span>
+          <div class="titles"><div class="t">语音与通话</div><div class="s">录音、来电动作、语音消息</div></div>
+        </div>
         <div class="card-body">
-          <p class="sub">通话与短信</p>
           <div class="grid-2">
             <div class="field">
               <label for="record-max-time">录音最长时间（秒）</label>
               <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span>
                 <input type="number" id="record-max-time" name="record-max-time" value="50" min="0" max="50">
               </div>
+              <div class="hint">范围 0–50 秒</div>
             </div>
             <div class="field">
               <label for="call-in-action">来电动作</label>
@@ -119,28 +138,368 @@
               </select>
             </div>
           </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="upload-url">录音上传地址</label>
-              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                <input type="text" id="upload-url" name="upload-url" placeholder="http://sms. 这是参考地址，不懂不写">
-              </div>
-            </div>
-            <div class="field">
-              <label for="tts-text">接通后 TTS 语音内容</label>
-              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span>
-                <textarea id="tts-text" name="tts-text" rows="2" placeholder="您好，请在语音结束后留言，稍后将发送到机主，结束请挂机。"></textarea>
-              </div>
-            </div>
-          </div>
           <div class="field">
-            <label for="sms-control-whitelist">短信控制白名单号码</label>
-            <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-shield"></use></svg></span>
-              <textarea id="sms-control-whitelist" name="sms-control-whitelist" rows="3" placeholder="每行一个号码"></textarea>
+            <label for="tts-text">接通后 TTS 语音内容</label>
+            <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span>
+              <textarea id="tts-text" name="tts-text" rows="2" placeholder="您好，请在语音结束后留言，稍后将发送到机主，结束请挂机。"></textarea>
+            </div>
+            <div class="hint">播放完成后开始录音；留空则播放设备内置提示音</div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- 独立功能：企业微信语音消息发送 -->
+          <div class="feature" id="voiceFeature">
+            <div class="feature-main">
+              <span class="feature-icon"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span>
+              <div class="feature-text">
+                <div class="feature-title">企业微信语音消息发送</div>
+                <div class="feature-desc">独立功能：开启后，来电录音将以语音消息直接推送到企业微信应用接收人。</div>
+                <div class="feature-dep">依赖：需在「通知渠道 → 企业微信应用」填写企业 ID 与应用密钥</div>
+              </div>
+              <label class="switch switch-lg"><input type="checkbox" name="voice-send-enable" id="voice-send-enable" aria-label="启用企业微信语音消息发送"><span class="track"></span></label>
             </div>
           </div>
 
           <hr class="divider">
+
+          <div class="field">
+            <label for="upload-url">录音上传地址（可选）</label>
+            <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cloud"></use></svg></span>
+              <input type="text" id="upload-url" name="upload-url" placeholder="https://<对象存储>/<录音目录>，留空则不上传">
+            </div>
+            <div class="hint">支持腾讯云 COS / 阿里云 OSS / S3 等直传地址；留空时来电动作将被覆盖为「接听后挂断」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 2. 通知渠道 ============ -->
+      <div class="card fade-up d1" id="sec-notify">
+        <div class="card-header">
+          <span class="index">02</span>
+          <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span>
+          <div class="titles"><div class="t">通知渠道</div><div class="s">文本推送渠道，可多选</div></div>
+          <span class="count-badge" id="channelCount">已启用 0 / 14</span>
+        </div>
+        <div class="card-body">
+          <p class="sub">勾选启用对应渠道并填写参数；未勾选的渠道，生成时会强制清空对应参数。</p>
+          <div class="notify-list">
+
+            <!-- wecom -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 企业微信机器人</span>
+                <span class="ndesc">群机器人 Webhook</span>
+                <label class="switch"><input type="checkbox" name="notify-wecom" id="notify-wecom" aria-label="启用企业微信机器人"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="wecom-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="wecom-webhook" name="wecom-webhook" placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"></div></div>
+              </div>
+            </div>
+
+            <!-- wecom_app -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-grid"></use></svg></span> 企业微信应用</span>
+                <span class="ndesc">自建应用消息</span>
+                <label class="switch"><input type="checkbox" name="notify-wecom-app" id="notify-wecom-app" aria-label="启用企业微信应用"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="wecom-corpid">企业 ID</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                      <input type="text" id="wecom-corpid" name="wecom-corpid" placeholder="企业ID"></div></div>
+                  <div class="field"><label for="wecom-corpsecret">应用密钥</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="wecom-corpsecret" name="wecom-corpsecret" placeholder="应用密钥"></div></div>
+                </div>
+                <div class="grid-3">
+                  <div class="field"><label for="wecom-agentid">应用 ID</label><input type="number" id="wecom-agentid" name="wecom-agentid" value="0" min="0"></div>
+                  <div class="field"><label for="wecom-app-touser">接收人</label><input type="text" id="wecom-app-touser" name="wecom-app-touser" placeholder="@all 或指定用户"></div>
+                  <div class="field"><label for="wecom-app-safe">安全级别</label>
+                    <select id="wecom-app-safe" name="wecom-app-safe"><option value="0" selected>普通</option><option value="1">加密</option></select></div>
+                </div>
+                <div class="dep-note">「企业微信语音消息发送」功能依赖此处的企业 ID 与应用密钥。</div>
+              </div>
+            </div>
+
+            <!-- custom_post -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg></span> 自定义 POST</span>
+                <span class="ndesc">任意 HTTP 接口</span>
+                <label class="switch"><input type="checkbox" name="notify-custom-post" id="notify-custom-post" aria-label="启用自定义 POST"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="custom-post-url">POST 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="custom-post-url" name="custom-post-url" value="https://sctapi.ftqq.com/&lt;SENDKEY&gt;.send"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="custom-post-content-type">Content-Type</label>
+                    <select id="custom-post-content-type" name="custom-post-content-type">
+                      <option value="application/json" selected>application/json</option>
+                      <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+                    </select></div>
+                </div>
+                <div class="field"><label for="custom-post-body">请求体 Lua 表/JSON 模板 (CUSTOM_POST_BODY_TABLE)</label>
+                  <textarea id="custom-post-body" name="custom-post-body" rows="3">{ ["title"] = "来自 Air724UG 的通知", ["desp"] = "{msg}" }</textarea></div>
+              </div>
+            </div>
+
+            <!-- telegram -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> Telegram</span>
+                <span class="ndesc">Bot 消息</span>
+                <label class="switch"><input type="checkbox" name="notify-telegram" id="notify-telegram" aria-label="启用 Telegram"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="telegram-api">Bot API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="telegram-api" name="telegram-api" placeholder="https://api.telegram.org/bot{token}/sendMessage"></div></div>
+                <div class="field"><label for="telegram-chat-id">Chat ID</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="telegram-chat-id" name="telegram-chat-id"></div></div>
+              </div>
+            </div>
+
+            <!-- bark -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-phone"></use></svg></span> Bark</span>
+                <span class="ndesc">iOS 推送</span>
+                <label class="switch"><input type="checkbox" name="notify-bark" id="notify-bark" aria-label="启用 Bark"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="bark-api">服务器地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="bark-api" name="bark-api" value="https://api.day.app"></div></div>
+                  <div class="field"><label for="bark-key">设备 Key</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="bark-key" name="bark-key"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- dingtalk -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 钉钉</span>
+                <span class="ndesc">群机器人</span>
+                <label class="switch"><input type="checkbox" name="notify-dingtalk" id="notify-dingtalk" aria-label="启用钉钉"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="dingtalk-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="dingtalk-webhook" name="dingtalk-webhook" placeholder="https://oapi.dingtalk.com/robot/send?access_token=xxx"></div></div>
+                <div class="field"><label for="dingtalk-secret">加签密钥 (可选)</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="dingtalk-secret" name="dingtalk-secret"></div></div>
+              </div>
+            </div>
+
+            <!-- pushdeer -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> PushDeer</span>
+                <span class="ndesc">多端推送</span>
+                <label class="switch"><input type="checkbox" name="notify-pushdeer" id="notify-pushdeer" aria-label="启用 PushDeer"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="pushdeer-api">服务器地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="pushdeer-api" name="pushdeer-api" value="https://api2.pushdeer.com/message/push"></div></div>
+                  <div class="field"><label for="pushdeer-key">Push Key</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="pushdeer-key" name="pushdeer-key"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- feishu -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span> 飞书</span>
+                <span class="ndesc">群机器人</span>
+                <label class="switch"><input type="checkbox" name="notify-feishu" id="notify-feishu" aria-label="启用飞书"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="feishu-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="feishu-webhook" name="feishu-webhook" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/xxx"></div></div>
+              </div>
+            </div>
+
+            <!-- gotify -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Gotify</span>
+                <span class="ndesc">自托管推送</span>
+                <label class="switch"><input type="checkbox" name="notify-gotify" id="notify-gotify" aria-label="启用 Gotify"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="gotify-api">API 地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="gotify-api" name="gotify-api" placeholder="http://127.0.0.1:8080"></div></div>
+                  <div class="field"><label for="gotify-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="gotify-title" name="gotify-title" value="转发器"></div></div>
+                </div>
+                <div class="grid-3">
+                  <div class="field"><label for="gotify-priority">优先级 (0-10)</label><input type="number" id="gotify-priority" name="gotify-priority" value="8" min="0" max="10"></div>
+                  <div class="field"><label for="gotify-token">应用 Token</label><input type="text" id="gotify-token" name="gotify-token"></div>
+                  <div class="field"><label for="gotify-client-token">客户端 Token</label><input type="text" id="gotify-client-token" name="gotify-client-token"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- serverchan -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-zap"></use></svg></span> ServerChan</span>
+                <span class="ndesc">微信服务号</span>
+                <label class="switch"><input type="checkbox" name="notify-serverchan" id="notify-serverchan" aria-label="启用 ServerChan"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="serverchan-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="serverchan-title" name="serverchan-title" value="来自 Air724UG 的通知"></div></div>
+                  <div class="field"><label for="serverchan-api">API 地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="serverchan-api" name="serverchan-api"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pushplus -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> PushPlus</span>
+                <span class="ndesc">微信公众号</span>
+                <label class="switch"><input type="checkbox" name="notify-pushplus" id="notify-pushplus" aria-label="启用 PushPlus"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="pushplus-token">Token</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="pushplus-token" name="pushplus-token"></div></div>
+                  <div class="field"><label for="pushplus-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="pushplus-title" name="pushplus-title"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- wxpusher -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> WxPusher</span>
+                <span class="ndesc">微信订阅推送</span>
+                <label class="switch"><input type="checkbox" name="notify-wxpusher" id="notify-wxpusher" aria-label="启用 WxPusher"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="wxpusher-apptoken">AppToken</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="wxpusher-apptoken" name="wxpusher-apptoken" placeholder="在 WxPusher 控制台申请的 AppToken"></div></div>
+                <div class="field"><label for="wxpusher-uids">UID 列表</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                    <input type="text" id="wxpusher-uids" name="wxpusher-uids" placeholder="多个 UID 使用英文逗号分隔"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="wxpusher-summary">摘要标题 (可选)</label>
+                    <input type="text" id="wxpusher-summary" name="wxpusher-summary" value="来自 Air724UG 的通知"></div>
+                  <div class="field"><label for="wxpusher-content-type">内容类型</label>
+                    <select id="wxpusher-content-type" name="wxpusher-content-type">
+                      <option value="1" selected>纯文本</option><option value="2">HTML</option><option value="3">Markdown</option>
+                    </select></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pushover -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Pushover</span>
+                <span class="ndesc">全平台推送</span>
+                <label class="switch"><input type="checkbox" name="notify-pushover" id="notify-pushover" aria-label="启用 Pushover"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="pushover-api-token">API Token</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="pushover-api-token" name="pushover-api-token"></div></div>
+                <div class="field"><label for="pushover-user-key">User Key</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                    <input type="text" id="pushover-user-key" name="pushover-user-key"></div></div>
+              </div>
+            </div>
+
+            <!-- inotify -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-radio"></use></svg></span> Inotify</span>
+                <span class="ndesc">合宙推送</span>
+                <label class="switch"><input type="checkbox" name="notify-inotify" id="notify-inotify" aria-label="启用 Inotify"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="inotify-api">API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="inotify-api" name="inotify-api"></div></div>
+              </div>
+            </div>
+
+            <!-- next-smtp-proxy -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic dark"><svg viewBox="0 0 24 24"><use href="#i-server"></use></svg></span> Next SMTP Proxy</span>
+                <span class="ndesc">邮件推送</span>
+                <label class="switch"><input type="checkbox" name="notify-next-smtp-proxy" id="notify-next-smtp-proxy" aria-label="启用 Next SMTP Proxy"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="next-smtp-proxy-api">API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="next-smtp-proxy-api" name="next-smtp-proxy-api"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-user">用户名</label><input type="text" id="next-smtp-proxy-user" name="next-smtp-proxy-user"></div>
+                  <div class="field"><label for="next-smtp-proxy-password">密码</label><input type="text" id="next-smtp-proxy-password" name="next-smtp-proxy-password"></div>
+                </div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-host">SMTP 服务器</label><input type="text" id="next-smtp-proxy-host" name="next-smtp-proxy-host" value="smtp-mail.outlook.com"></div>
+                  <div class="field"><label for="next-smtp-proxy-port">端口</label><input type="number" id="next-smtp-proxy-port" name="next-smtp-proxy-port" value="587"></div>
+                </div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-form-name">发送人名称</label><input type="text" id="next-smtp-proxy-form-name" name="next-smtp-proxy-form-name" value="Air724UG"></div>
+                  <div class="field"><label for="next-smtp-proxy-to-email">收件人邮箱</label><input type="text" id="next-smtp-proxy-to-email" name="next-smtp-proxy-to-email"></div>
+                </div>
+                <div class="field"><label for="next-smtp-proxy-subject">邮件主题</label><input type="text" id="next-smtp-proxy-subject" name="next-smtp-proxy-subject" value="来自 Air724UG 的通知"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 3. 短信与系统 ============ -->
+      <div class="card fade-up d2" id="sec-system">
+        <div class="card-header">
+          <span class="index">03</span>
+          <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-settings"></use></svg></span>
+          <div class="titles"><div class="t">短信与系统</div><div class="s">控制白名单 · 设备参数</div></div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="sms-control-whitelist">短信控制白名单号码</label>
+            <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-shield"></use></svg></span>
+              <textarea id="sms-control-whitelist" name="sms-control-whitelist" rows="3" placeholder="每行一个号码；留空则禁止所有号码控制设备"></textarea>
+            </div>
+          </div>
+
+          <hr class="divider">
+
           <p class="sub">系统配置</p>
           <div class="grid-2">
             <div class="field">
@@ -148,6 +507,7 @@
               <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-clock"></use></svg></span>
                 <input type="number" id="query-traffic-interval" name="query-traffic-interval" value="0" min="0">
               </div>
+              <div class="hint">设为 0 关闭</div>
             </div>
             <div class="field">
               <label for="notify-retry-max">通知最大重发次数</label>
@@ -185,309 +545,12 @@
           </div>
         </div>
       </div>
-
-      <!-- 通知配置 -->
-      <div class="card">
-        <div class="card-header"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> 通知配置</div>
-        <div class="card-body">
-          <p class="sub">勾选启用对应通知服务，并填写参数（未勾选渠道在生成时会强制清空对应参数）。</p>
-          <div class="notify-list">
-
-            <!-- custom_post -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg></span> 自定义 POST</span>
-                <label class="switch"><input type="checkbox" name="notify-custom-post" id="notify-custom-post"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="custom-post-url">POST 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="custom-post-url" name="custom-post-url" value="https://sctapi.ftqq.com/&lt;SENDKEY&gt;.send"></div></div>
-                <div class="grid-2">
-                  <div class="field"><label for="custom-post-content-type">Content-Type</label>
-                    <select id="custom-post-content-type" name="custom-post-content-type">
-                      <option value="application/json" selected>application/json</option>
-                      <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
-                    </select></div>
-                </div>
-                <div class="field"><label for="custom-post-body">请求体 Lua 表/JSON 模板 (CUSTOM_POST_BODY_TABLE)</label>
-                  <textarea id="custom-post-body" name="custom-post-body" rows="3">{ ["title"] = "来自 Air724UG 的通知", ["desp"] = "{msg}" }</textarea></div>
-              </div>
-            </div>
-
-            <!-- telegram -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> Telegram</span>
-                <label class="switch"><input type="checkbox" name="notify-telegram" id="notify-telegram"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="telegram-api">Bot API 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="telegram-api" name="telegram-api" placeholder="https://api.telegram.org/bot{token}/sendMessage"></div></div>
-                <div class="field"><label for="telegram-chat-id">Chat ID</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                    <input type="text" id="telegram-chat-id" name="telegram-chat-id"></div></div>
-              </div>
-            </div>
-
-            <!-- bark -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-phone"></use></svg></span> Bark</span>
-                <label class="switch"><input type="checkbox" name="notify-bark" id="notify-bark"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="bark-api">服务器地址</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                      <input type="text" id="bark-api" name="bark-api" value="https://api.day.app"></div></div>
-                  <div class="field"><label for="bark-key">设备 Key</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                      <input type="text" id="bark-key" name="bark-key"></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- dingtalk -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 钉钉</span>
-                <label class="switch"><input type="checkbox" name="notify-dingtalk" id="notify-dingtalk"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="dingtalk-webhook">Webhook 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="dingtalk-webhook" name="dingtalk-webhook" placeholder="https://oapi.dingtalk.com/robot/send?access_token=xxx"></div></div>
-                <div class="field"><label for="dingtalk-secret">加签密钥 (可选)</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                    <input type="text" id="dingtalk-secret" name="dingtalk-secret"></div></div>
-              </div>
-            </div>
-
-            <!-- pushdeer -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> PushDeer</span>
-                <label class="switch"><input type="checkbox" name="notify-pushdeer" id="notify-pushdeer"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="pushdeer-api">服务器地址</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                      <input type="text" id="pushdeer-api" name="pushdeer-api" value="https://api2.pushdeer.com/message/push"></div></div>
-                  <div class="field"><label for="pushdeer-key">Push Key</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                      <input type="text" id="pushdeer-key" name="pushdeer-key"></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- feishu -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span> 飞书</span>
-                <label class="switch"><input type="checkbox" name="notify-feishu" id="notify-feishu"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="feishu-webhook">Webhook 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="feishu-webhook" name="feishu-webhook" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/xxx"></div></div>
-              </div>
-            </div>
-
-            <!-- wecom -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 企业微信机器人</span>
-                <label class="switch"><input type="checkbox" name="notify-wecom" id="notify-wecom"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="wecom-webhook">Webhook 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="wecom-webhook" name="wecom-webhook" placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"></div></div>
-              </div>
-            </div>
-
-            <!-- wecom_app -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-grid"></use></svg></span> 企业微信应用</span>
-                <label class="switch"><input type="checkbox" name="notify-wecom-app" id="notify-wecom-app"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="wecom-corpid">企业 ID</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
-                      <input type="text" id="wecom-corpid" name="wecom-corpid" placeholder="企业ID"></div></div>
-                  <div class="field"><label for="wecom-corpsecret">应用密钥</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                      <input type="text" id="wecom-corpsecret" name="wecom-corpsecret" placeholder="应用密钥"></div></div>
-                </div>
-                <div class="grid-3">
-                  <div class="field"><label for="wecom-agentid">应用 ID</label><input type="number" id="wecom-agentid" name="wecom-agentid" value="0" min="0"></div>
-                  <div class="field"><label for="wecom-app-touser">接收人</label><input type="text" id="wecom-app-touser" name="wecom-app-touser" placeholder="@all 或指定用户"></div>
-                  <div class="field"><label for="wecom-app-safe">安全级别</label>
-                    <select id="wecom-app-safe" name="wecom-app-safe"><option value="0" selected>普通</option><option value="1">加密</option></select></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- gotify -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Gotify</span>
-                <label class="switch"><input type="checkbox" name="notify-gotify" id="notify-gotify"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="gotify-api">API 地址</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                      <input type="text" id="gotify-api" name="gotify-api" placeholder="http://127.0.0.1:8080"></div></div>
-                  <div class="field"><label for="gotify-title">标题</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
-                      <input type="text" id="gotify-title" name="gotify-title" value="转发器"></div></div>
-                </div>
-                <div class="grid-3">
-                  <div class="field"><label for="gotify-priority">优先级 (0-10)</label><input type="number" id="gotify-priority" name="gotify-priority" value="8" min="0" max="10"></div>
-                  <div class="field"><label for="gotify-token">应用 Token</label><input type="text" id="gotify-token" name="gotify-token"></div>
-                  <div class="field"><label for="gotify-client-token">客户端 Token</label><input type="text" id="gotify-client-token" name="gotify-client-token"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- serverchan -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-zap"></use></svg></span> ServerChan</span>
-                <label class="switch"><input type="checkbox" name="notify-serverchan" id="notify-serverchan"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="serverchan-title">标题</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
-                      <input type="text" id="serverchan-title" name="serverchan-title" value="来自 Air724UG 的通知"></div></div>
-                  <div class="field"><label for="serverchan-api">API 地址</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                      <input type="text" id="serverchan-api" name="serverchan-api"></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- pushplus -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> PushPlus</span>
-                <label class="switch"><input type="checkbox" name="notify-pushplus" id="notify-pushplus"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="grid-2">
-                  <div class="field"><label for="pushplus-token">Token</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                      <input type="text" id="pushplus-token" name="pushplus-token"></div></div>
-                  <div class="field"><label for="pushplus-title">标题</label>
-                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
-                      <input type="text" id="pushplus-title" name="pushplus-title"></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- wxpusher -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> WxPusher</span>
-                <label class="switch"><input type="checkbox" name="notify-wxpusher" id="notify-wxpusher"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="wxpusher-apptoken">AppToken</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                    <input type="text" id="wxpusher-apptoken" name="wxpusher-apptoken" placeholder="在 WxPusher 控制台申请的 AppToken"></div></div>
-                <div class="field"><label for="wxpusher-uids">UID 列表</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
-                    <input type="text" id="wxpusher-uids" name="wxpusher-uids" placeholder="多个 UID 使用英文逗号分隔"></div></div>
-                <div class="grid-2">
-                  <div class="field"><label for="wxpusher-summary">摘要标题 (可选)</label>
-                    <input type="text" id="wxpusher-summary" name="wxpusher-summary" value="来自 Air724UG 的通知"></div>
-                  <div class="field"><label for="wxpusher-content-type">内容类型</label>
-                    <select id="wxpusher-content-type" name="wxpusher-content-type">
-                      <option value="1" selected>纯文本</option><option value="2">HTML</option><option value="3">Markdown</option>
-                    </select></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- pushover -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Pushover</span>
-                <label class="switch"><input type="checkbox" name="notify-pushover" id="notify-pushover"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="pushover-api-token">API Token</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
-                    <input type="text" id="pushover-api-token" name="pushover-api-token"></div></div>
-                <div class="field"><label for="pushover-user-key">User Key</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
-                    <input type="text" id="pushover-user-key" name="pushover-user-key"></div></div>
-              </div>
-            </div>
-
-            <!-- inotify -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-radio"></use></svg></span> Inotify</span>
-                <label class="switch"><input type="checkbox" name="notify-inotify" id="notify-inotify"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="inotify-api">API 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="inotify-api" name="inotify-api"></div></div>
-              </div>
-            </div>
-
-            <!-- next-smtp-proxy -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic dark"><svg viewBox="0 0 24 24"><use href="#i-server"></use></svg></span> Next SMTP Proxy</span>
-                <label class="switch"><input type="checkbox" name="notify-next-smtp-proxy" id="notify-next-smtp-proxy"><span class="track"></span></label>
-              </div>
-              <div class="notify-body">
-                <div class="field"><label for="next-smtp-proxy-api">API 地址</label>
-                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
-                    <input type="text" id="next-smtp-proxy-api" name="next-smtp-proxy-api"></div></div>
-                <div class="grid-2">
-                  <div class="field"><label for="next-smtp-proxy-user">用户名</label><input type="text" id="next-smtp-proxy-user" name="next-smtp-proxy-user"></div>
-                  <div class="field"><label for="next-smtp-proxy-password">密码</label><input type="text" id="next-smtp-proxy-password" name="next-smtp-proxy-password"></div>
-                </div>
-                <div class="grid-2">
-                  <div class="field"><label for="next-smtp-proxy-host">SMTP 服务器</label><input type="text" id="next-smtp-proxy-host" name="next-smtp-proxy-host" value="smtp-mail.outlook.com"></div>
-                  <div class="field"><label for="next-smtp-proxy-port">端口</label><input type="number" id="next-smtp-proxy-port" name="next-smtp-proxy-port" value="587"></div>
-                </div>
-                <div class="grid-2">
-                  <div class="field"><label for="next-smtp-proxy-form-name">发送人名称</label><input type="text" id="next-smtp-proxy-form-name" name="next-smtp-proxy-form-name" value="Air724UG"></div>
-                  <div class="field"><label for="next-smtp-proxy-to-email">收件人邮箱</label><input type="text" id="next-smtp-proxy-to-email" name="next-smtp-proxy-to-email"></div>
-                </div>
-                <div class="field"><label for="next-smtp-proxy-subject">邮件主题</label><input type="text" id="next-smtp-proxy-subject" name="next-smtp-proxy-subject" value="来自 Air724UG 的通知"></div>
-              </div>
-            </div>
-
-            <!-- 语音发送 -->
-            <div class="notify-item">
-              <div class="notify-head">
-                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span> 企业微信语音消息发送</span>
-                <label class="switch"><input type="checkbox" name="voice-send-enable" id="voice-send-enable"><span class="track"></span></label>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
     </form>
   </div>
 
   <!-- 右侧预览 / 生成 -->
-  <aside class="sidebar">
-    <div class="panel">
+  <aside class="sidebar" id="sec-output">
+    <div class="panel fade-up d1">
       <div class="panel-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg></span> 生成 &amp; 预览</div>
       <div class="panel-body">
         <label class="sub" for="preview" style="display:block;margin-bottom:.5rem">Lua 明文预览（实时更新）</label>
@@ -503,13 +566,12 @@
       </div>
     </div>
 
-    <div class="panel tips">
+    <div class="panel tips fade-up d2">
       <div class="panel-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-info"></use></svg></span> 提示</div>
       <div class="panel-body">
         <ul>
+          <li>「企业微信语音消息发送」是独立功能，在「语音与通话」区块配置，依赖企业微信应用凭证。</li>
           <li>建议先在测试设备上验证配置，再用于正式环境。</li>
-          <li>如需关闭某项功能，取消勾选或留空对应字段即可。</li>
-          <li>本机号码仅在 SIM 未报告号码时作为备用显示。</li>
           <li>下载的 <code>config.bin</code> 请直接复制到 U 盘根目录，不要编辑。</li>
         </ul>
       </div>
@@ -520,16 +582,16 @@
 <footer class="footer">Air724UG 离线配置生成器 · 纯前端实现，数据不出本机</footer>
 
 <!-- 帮助弹窗 -->
-<div class="modal-mask" id="helpModal">
+<div class="modal-mask" id="helpModal" role="dialog" aria-modal="true" aria-label="使用说明">
   <div class="modal">
     <div class="modal-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-help"></use></svg></span> 使用说明
       <button class="x" id="helpClose" aria-label="关闭"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
     <div class="modal-body">
       <ol>
-        <li>先在右侧（本页「通知配置」）勾选你要用的推送渠道，再填写对应参数；未勾选渠道在生成时会强制清空对应参数。</li>
-        <li>点击 <span class="kbd">下载 config.bin</span> 即可生成加密配置。</li>
-        <li>下载后不要用任何编辑器打开它，直接复制到 U 盘根目录。</li>
+        <li><strong>语音与通话</strong>：配置录音时长、来电动作与 TTS；「企业微信语音消息发送」为独立功能，开启后通话录音以语音消息推送到企业微信应用。</li>
+        <li><strong>通知渠道</strong>：勾选要用的文本推送渠道并填写参数；未勾选渠道在生成时会强制清空对应参数。</li>
+        <li>点击 <span class="kbd">下载 config.bin</span> 生成加密配置，直接复制到 U 盘根目录，不要用编辑器打开。</li>
         <li>如设备日志出现 <span class="code">decode failed ... -44</span>，通常是 Base64 被插入换行/空格/BOM；请重新生成并确保写入文件未被改动。</li>
         <li>短信/来电控制（需先配置 <span class="code">短信控制白名单号码</span>，每行一个号码）：
           <div style="margin-top:.4rem">

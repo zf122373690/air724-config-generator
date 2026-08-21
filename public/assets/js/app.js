@@ -1,5 +1,6 @@
 /*
  * app.js — 前端交互：收集表单、实时预览 Lua、客户端加密并下载 config.bin
+ * v2：新增 渠道计数徽章 / 语音功能块状态 / 分区导航 scrollspy
  */
 (function () {
   'use strict';
@@ -10,17 +11,39 @@
   const copyBtn = document.getElementById('copyBtn');
   const copyBinBtn = document.getElementById('copyBinBtn');
   const statusEl = document.getElementById('status');
+  const channelCountEl = document.getElementById('channelCount');
+  const voiceFeature = document.getElementById('voiceFeature');
 
-  // 通知开关 -> 展开/收起对应配置卡片
-  function syncNotifyItems() {
-    document.querySelectorAll('.notify-item').forEach(function (item) {
+  // 通知渠道项（不含独立功能块）
+  const channelItems = Array.prototype.slice.call(document.querySelectorAll('.notify-item'));
+  const CHANNEL_TOTAL = channelItems.length;
+
+  // ---------- 开关状态同步 ----------
+  function syncSwitchStates() {
+    channelItems.forEach(function (item) {
       const input = item.querySelector('input[type=checkbox]');
       if (input && input.checked) item.classList.add('on');
       else item.classList.remove('on');
     });
+    if (voiceFeature) {
+      const input = voiceFeature.querySelector('input[type=checkbox]');
+      if (input && input.checked) voiceFeature.classList.add('on');
+      else voiceFeature.classList.remove('on');
+    }
   }
 
-  // 生成本地 Lua 明文并刷新预览
+  // ---------- 渠道计数徽章 ----------
+  function updateChannelCount() {
+    if (!channelCountEl) return;
+    const n = channelItems.filter(function (item) {
+      const input = item.querySelector('input[type=checkbox]');
+      return input && input.checked;
+    }).length;
+    channelCountEl.textContent = '已启用 ' + n + ' / ' + CHANNEL_TOTAL;
+    channelCountEl.classList.toggle('on', n > 0);
+  }
+
+  // ---------- 生成本地 Lua 明文并刷新预览 ----------
   function updatePreview() {
     try {
       const data = ConfigBuilder.collectForm(form);
@@ -48,7 +71,7 @@
     timer = setTimeout(updatePreview, 250);
   }
 
-  // 下载 config.bin（内容为加密后的 Base64 文本，与原 PHP 行为一致）
+  // ---------- 下载 config.bin（内容为加密后的 Base64 文本，与原 PHP 行为一致） ----------
   function downloadConfig() {
     try {
       const data = ConfigBuilder.collectForm(form);
@@ -91,13 +114,19 @@
     document.body.removeChild(ta);
   }
 
-  // 事件绑定
+  // ---------- 事件绑定 ----------
   form.addEventListener('input', function (e) {
-    if (e.target.matches('.notify-item input[type=checkbox]')) syncNotifyItems();
+    if (e.target.matches('.notify-item input[type=checkbox], .feature input[type=checkbox]')) {
+      syncSwitchStates();
+      updateChannelCount();
+    }
     schedulePreview();
   });
   form.addEventListener('change', function (e) {
-    if (e.target.matches('.notify-item input[type=checkbox]')) syncNotifyItems();
+    if (e.target.matches('.notify-item input[type=checkbox], .feature input[type=checkbox]')) {
+      syncSwitchStates();
+      updateChannelCount();
+    }
     schedulePreview();
   });
 
@@ -116,14 +145,14 @@
     }
   });
 
-  // 顶部推广条关闭
+  // ---------- 顶部推广条关闭 ----------
   const promoClose = document.getElementById('promoClose');
   if (promoClose) promoClose.addEventListener('click', function () {
     const bar = document.getElementById('promo');
     if (bar) bar.style.display = 'none';
   });
 
-  // 帮助弹窗
+  // ---------- 帮助弹窗 ----------
   const helpModal = document.getElementById('helpModal');
   const helpBtn = document.getElementById('helpBtn');
   const helpClose = document.getElementById('helpClose');
@@ -136,7 +165,26 @@
     if (e.key === 'Escape' && helpModal.classList.contains('show')) helpModal.classList.remove('show');
   });
 
-  // 初始化
-  syncNotifyItems();
+  // ---------- 分区导航 scrollspy ----------
+  (function initScrollspy() {
+    const chips = Array.prototype.slice.call(document.querySelectorAll('.nav-chip'));
+    if (!chips.length || !('IntersectionObserver' in window)) return;
+    const sections = chips
+      .map(function (c) { return document.getElementById(c.getAttribute('data-sec')); })
+      .filter(Boolean);
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        chips.forEach(function (c) {
+          c.classList.toggle('active', c.getAttribute('data-sec') === entry.target.id);
+        });
+      });
+    }, { rootMargin: '-140px 0px -55% 0px', threshold: 0 });
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+
+  // ---------- 初始化 ----------
+  syncSwitchStates();
+  updateChannelCount();
   updatePreview();
 })();
