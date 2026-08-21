@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Air724UG 离线配置生成器</title>
+  <meta name="description" content="Air724UG 离线配置生成器：本地生成 Lua 明文预览与加密 config.bin，无需服务器，可离线使用。">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<!-- SVG 图标精灵（Feather 风格，MIT），离线可用 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-settings" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></g>
+    <g id="i-bell" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></g>
+    <g id="i-mic" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></g>
+    <g id="i-phone" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></g>
+    <g id="i-link" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></g>
+    <g id="i-shield" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></g>
+    <g id="i-clock" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></g>
+    <g id="i-refresh" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></g>
+    <g id="i-hash" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></g>
+    <g id="i-sim" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="3" x2="9" y2="9"></line></g>
+    <g id="i-volume" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></g>
+    <g id="i-cpu" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></g>
+    <g id="i-download" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></g>
+    <g id="i-info" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></g>
+    <g id="i-help" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></g>
+    <g id="i-copy" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></g>
+    <g id="i-check" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></g>
+    <g id="i-x" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></g>
+    <g id="i-zap" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></g>
+    <g id="i-envelope" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></g>
+    <g id="i-radio" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"></path></g>
+    <g id="i-server" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></g>
+    <g id="i-chat" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></g>
+    <g id="i-code" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></g>
+    <g id="i-send" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></g>
+    <g id="i-edit" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></g>
+    <g id="i-grid" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></g>
+  </defs>
+</svg>
+
+<!-- 顶部推广条 -->
+<div class="promo" id="promo">
+  <span><strong>推广</strong></span>
+  <span>多卡用户首选 · <strong>T3多卡宝</strong> 一机多卡，聚合管控更省心</span>
+  <a href="http://dkb.cc.cd" target="_blank" rel="noopener">立即了解 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a>
+  <button class="close" id="promoClose" aria-label="关闭推广"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+</div>
+
+<!-- 顶栏 -->
+<header class="app-header">
+  <div class="inner">
+    <a class="brand" href="#">
+      <span class="dot"></span>
+      <span class="name">配置生成器</span>
+      <span class="tag">Air724UG</span>
+    </a>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" id="helpBtn"><svg width="18" height="18" viewBox="0 0 24 24"><use href="#i-help"></use></svg> 使用说明</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>离线配置生成器 <span class="tag" style="font-size:.7rem;vertical-align:middle">录音 + 对端TTS + 推送/上传</span></h1>
+  <p>纯前端本地生成：实时预览 Lua 明文，并加密导出 <code style="font-family:var(--mono)">config.bin</code>（直接放 U 盘根目录）。所有计算都在你的浏览器完成，不上传任何数据。</p>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><div><div class="t">填写配置</div><div class="s">基础 / 语音</div></div></div>
+    <div class="step s2"><span class="num">2</span><div><div class="t">选择渠道</div><div class="s">通知策略</div></div></div>
+    <div class="step s3"><span class="num">3</span><div><div class="t">生成下载</div><div class="s">写入 U 盘</div></div></div>
+  </div>
+</section>
+
+<!-- 资源入口 -->
+<section class="resources">
+  <a class="resource" href="https://cloud.1992418.xyz/ecloud/724" target="_blank" rel="noopener">
+    <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-download"></use></svg></span>
+    <span class="meta"><div class="label">固件(开源) &amp; 工具 &amp; 驱动</div><div class="title">点击下载</div></span>
+  </a>
+  <a class="resource" href="https://m.tb.cn/h.iDP9waT?tk=IVPX5mTA9ru" target="_blank" rel="noopener">
+    <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+    <span class="meta"><div class="label">店铺地址</div><div class="title">闲鱼下单</div></span>
+  </a>
+  <a class="resource" href="http://doc.wlkeji.com/web/#/649801147/230621048" target="_blank" rel="noopener">
+    <span class="ic"><svg viewBox="0 0 24 24"><use href="#i-info"></use></svg></span>
+    <span class="meta"><div class="label">刷机参考教程</div><div class="title">点击跳转（第三方）</div></span>
+  </a>
+</section>
+
+<!-- 主布局 -->
+<div class="layout">
+  <!-- 左侧表单 -->
+  <div>
+    <form id="configForm" autocomplete="off">
+      <!-- 通话/短信/系统配置 -->
+      <div class="card">
+        <div class="card-header"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-settings"></use></svg></span> 通话 / 短信 / 系统配置</div>
+        <div class="card-body">
+          <p class="sub">通话与短信</p>
+          <div class="grid-2">
+            <div class="field">
+              <label for="record-max-time">录音最长时间（秒）</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span>
+                <input type="number" id="record-max-time" name="record-max-time" value="50" min="0" max="50">
+              </div>
+            </div>
+            <div class="field">
+              <label for="call-in-action">来电动作</label>
+              <select id="call-in-action" name="call-in-action">
+                <option value="0">0 - 无操作</option>
+                <option value="1" selected>1 - 自动接听</option>
+                <option value="2">2 - 挂断</option>
+                <option value="3">3 - 自动接听后挂断</option>
+                <option value="4">4 - 等待30秒后自动接听</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="upload-url">录音上传地址</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                <input type="text" id="upload-url" name="upload-url" placeholder="http://sms. 这是参考地址，不懂不写">
+              </div>
+            </div>
+            <div class="field">
+              <label for="tts-text">接通后 TTS 语音内容</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span>
+                <textarea id="tts-text" name="tts-text" rows="2" placeholder="您好，请在语音结束后留言，稍后将发送到机主，结束请挂机。"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="sms-control-whitelist">短信控制白名单号码</label>
+            <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-shield"></use></svg></span>
+              <textarea id="sms-control-whitelist" name="sms-control-whitelist" rows="3" placeholder="每行一个号码"></textarea>
+            </div>
+          </div>
+
+          <hr class="divider">
+          <p class="sub">系统配置</p>
+          <div class="grid-2">
+            <div class="field">
+              <label for="query-traffic-interval">定时查询流量间隔（分钟）</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-clock"></use></svg></span>
+                <input type="number" id="query-traffic-interval" name="query-traffic-interval" value="0" min="0">
+              </div>
+            </div>
+            <div class="field">
+              <label for="notify-retry-max">通知最大重发次数</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-refresh"></use></svg></span>
+                <input type="number" id="notify-retry-max" name="notify-retry-max" value="100" min="0">
+              </div>
+            </div>
+          </div>
+          <div class="check-row" style="margin-bottom:1rem">
+            <label class="check"><input type="checkbox" id="boot-notify" name="boot-notify" value="1" checked> 开机发送通知</label>
+            <label class="check"><input type="checkbox" id="notify-append-info" name="notify-append-info" value="1" checked> 通知追加更多设备信息</label>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="NUMBER">本机号码</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                <input type="text" id="NUMBER" name="NUMBER" placeholder="不填则使用 SIM 号码/ICCID">
+              </div>
+            </div>
+            <div class="field">
+              <label for="pin-code">SIM 卡 PIN 码</label>
+              <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-sim"></use></svg></span>
+                <input type="text" id="pin-code" name="pin-code" placeholder="如无则留空">
+              </div>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="field"><label for="audio-volume">扬声器音量</label><input type="number" id="audio-volume" name="audio-volume" value="1" min="0" max="7"></div>
+            <div class="field"><label for="call-volume">通话音量</label><input type="number" id="call-volume" name="call-volume" value="0" min="0" max="7"></div>
+            <div class="field"><label for="mic-volume">麦克风音量</label><input type="number" id="mic-volume" name="mic-volume" value="7" min="0" max="7"></div>
+          </div>
+          <div class="check-row">
+            <label class="check"><input type="checkbox" id="rndis-enable" name="rndis-enable" value="1"> 启用 RNDIS 网卡</label>
+            <label class="check"><input type="checkbox" id="led-enable" name="led-enable" value="1" checked> 启用状态指示灯</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 通知配置 -->
+      <div class="card">
+        <div class="card-header"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> 通知配置</div>
+        <div class="card-body">
+          <p class="sub">勾选启用对应通知服务，并填写参数（未勾选渠道在生成时会强制清空对应参数）。</p>
+          <div class="notify-list">
+
+            <!-- custom_post -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg></span> 自定义 POST</span>
+                <label class="switch"><input type="checkbox" name="notify-custom-post" id="notify-custom-post"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="custom-post-url">POST 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="custom-post-url" name="custom-post-url" value="https://sctapi.ftqq.com/&lt;SENDKEY&gt;.send"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="custom-post-content-type">Content-Type</label>
+                    <select id="custom-post-content-type" name="custom-post-content-type">
+                      <option value="application/json" selected>application/json</option>
+                      <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+                    </select></div>
+                </div>
+                <div class="field"><label for="custom-post-body">请求体 Lua 表/JSON 模板 (CUSTOM_POST_BODY_TABLE)</label>
+                  <textarea id="custom-post-body" name="custom-post-body" rows="3">{ ["title"] = "来自 Air724UG 的通知", ["desp"] = "{msg}" }</textarea></div>
+              </div>
+            </div>
+
+            <!-- telegram -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> Telegram</span>
+                <label class="switch"><input type="checkbox" name="notify-telegram" id="notify-telegram"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="telegram-api">Bot API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="telegram-api" name="telegram-api" placeholder="https://api.telegram.org/bot{token}/sendMessage"></div></div>
+                <div class="field"><label for="telegram-chat-id">Chat ID</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="telegram-chat-id" name="telegram-chat-id"></div></div>
+              </div>
+            </div>
+
+            <!-- bark -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-phone"></use></svg></span> Bark</span>
+                <label class="switch"><input type="checkbox" name="notify-bark" id="notify-bark"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="bark-api">服务器地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="bark-api" name="bark-api" value="https://api.day.app"></div></div>
+                  <div class="field"><label for="bark-key">设备 Key</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="bark-key" name="bark-key"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- dingtalk -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 钉钉</span>
+                <label class="switch"><input type="checkbox" name="notify-dingtalk" id="notify-dingtalk"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="dingtalk-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="dingtalk-webhook" name="dingtalk-webhook" placeholder="https://oapi.dingtalk.com/robot/send?access_token=xxx"></div></div>
+                <div class="field"><label for="dingtalk-secret">加签密钥 (可选)</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="dingtalk-secret" name="dingtalk-secret"></div></div>
+              </div>
+            </div>
+
+            <!-- pushdeer -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic warn"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> PushDeer</span>
+                <label class="switch"><input type="checkbox" name="notify-pushdeer" id="notify-pushdeer"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="pushdeer-api">服务器地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="pushdeer-api" name="pushdeer-api" value="https://api2.pushdeer.com/message/push"></div></div>
+                  <div class="field"><label for="pushdeer-key">Push Key</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="pushdeer-key" name="pushdeer-key"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- feishu -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span> 飞书</span>
+                <label class="switch"><input type="checkbox" name="notify-feishu" id="notify-feishu"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="feishu-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="feishu-webhook" name="feishu-webhook" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/xxx"></div></div>
+              </div>
+            </div>
+
+            <!-- wecom -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> 企业微信机器人</span>
+                <label class="switch"><input type="checkbox" name="notify-wecom" id="notify-wecom"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="wecom-webhook">Webhook 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="wecom-webhook" name="wecom-webhook" placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"></div></div>
+              </div>
+            </div>
+
+            <!-- wecom_app -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic green"><svg viewBox="0 0 24 24"><use href="#i-grid"></use></svg></span> 企业微信应用</span>
+                <label class="switch"><input type="checkbox" name="notify-wecom-app" id="notify-wecom-app"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="wecom-corpid">企业 ID</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                      <input type="text" id="wecom-corpid" name="wecom-corpid" placeholder="企业ID"></div></div>
+                  <div class="field"><label for="wecom-corpsecret">应用密钥</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="wecom-corpsecret" name="wecom-corpsecret" placeholder="应用密钥"></div></div>
+                </div>
+                <div class="grid-3">
+                  <div class="field"><label for="wecom-agentid">应用 ID</label><input type="number" id="wecom-agentid" name="wecom-agentid" value="0" min="0"></div>
+                  <div class="field"><label for="wecom-app-touser">接收人</label><input type="text" id="wecom-app-touser" name="wecom-app-touser" placeholder="@all 或指定用户"></div>
+                  <div class="field"><label for="wecom-app-safe">安全级别</label>
+                    <select id="wecom-app-safe" name="wecom-app-safe"><option value="0" selected>普通</option><option value="1">加密</option></select></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- gotify -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Gotify</span>
+                <label class="switch"><input type="checkbox" name="notify-gotify" id="notify-gotify"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="gotify-api">API 地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="gotify-api" name="gotify-api" placeholder="http://127.0.0.1:8080"></div></div>
+                  <div class="field"><label for="gotify-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="gotify-title" name="gotify-title" value="转发器"></div></div>
+                </div>
+                <div class="grid-3">
+                  <div class="field"><label for="gotify-priority">优先级 (0-10)</label><input type="number" id="gotify-priority" name="gotify-priority" value="8" min="0" max="10"></div>
+                  <div class="field"><label for="gotify-token">应用 Token</label><input type="text" id="gotify-token" name="gotify-token"></div>
+                  <div class="field"><label for="gotify-client-token">客户端 Token</label><input type="text" id="gotify-client-token" name="gotify-client-token"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- serverchan -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-zap"></use></svg></span> ServerChan</span>
+                <label class="switch"><input type="checkbox" name="notify-serverchan" id="notify-serverchan"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="serverchan-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="serverchan-title" name="serverchan-title" value="来自 Air724UG 的通知"></div></div>
+                  <div class="field"><label for="serverchan-api">API 地址</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                      <input type="text" id="serverchan-api" name="serverchan-api"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pushplus -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"></use></svg></span> PushPlus</span>
+                <label class="switch"><input type="checkbox" name="notify-pushplus" id="notify-pushplus"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="grid-2">
+                  <div class="field"><label for="pushplus-token">Token</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                      <input type="text" id="pushplus-token" name="pushplus-token"></div></div>
+                  <div class="field"><label for="pushplus-title">标题</label>
+                    <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-edit"></use></svg></span>
+                      <input type="text" id="pushplus-title" name="pushplus-title"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- wxpusher -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"></use></svg></span> WxPusher</span>
+                <label class="switch"><input type="checkbox" name="notify-wxpusher" id="notify-wxpusher"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="wxpusher-apptoken">AppToken</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="wxpusher-apptoken" name="wxpusher-apptoken" placeholder="在 WxPusher 控制台申请的 AppToken"></div></div>
+                <div class="field"><label for="wxpusher-uids">UID 列表</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                    <input type="text" id="wxpusher-uids" name="wxpusher-uids" placeholder="多个 UID 使用英文逗号分隔"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="wxpusher-summary">摘要标题 (可选)</label>
+                    <input type="text" id="wxpusher-summary" name="wxpusher-summary" value="来自 Air724UG 的通知"></div>
+                  <div class="field"><label for="wxpusher-content-type">内容类型</label>
+                    <select id="wxpusher-content-type" name="wxpusher-content-type">
+                      <option value="1" selected>纯文本</option><option value="2">HTML</option><option value="3">Markdown</option>
+                    </select></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pushover -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bell"></use></svg></span> Pushover</span>
+                <label class="switch"><input type="checkbox" name="notify-pushover" id="notify-pushover"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="pushover-api-token">API Token</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-hash"></use></svg></span>
+                    <input type="text" id="pushover-api-token" name="pushover-api-token"></div></div>
+                <div class="field"><label for="pushover-user-key">User Key</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-cpu"></use></svg></span>
+                    <input type="text" id="pushover-user-key" name="pushover-user-key"></div></div>
+              </div>
+            </div>
+
+            <!-- inotify -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-radio"></use></svg></span> Inotify</span>
+                <label class="switch"><input type="checkbox" name="notify-inotify" id="notify-inotify"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="inotify-api">API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="inotify-api" name="inotify-api"></div></div>
+              </div>
+            </div>
+
+            <!-- next-smtp-proxy -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic dark"><svg viewBox="0 0 24 24"><use href="#i-server"></use></svg></span> Next SMTP Proxy</span>
+                <label class="switch"><input type="checkbox" name="notify-next-smtp-proxy" id="notify-next-smtp-proxy"><span class="track"></span></label>
+              </div>
+              <div class="notify-body">
+                <div class="field"><label for="next-smtp-proxy-api">API 地址</label>
+                  <div class="with-icon"><span class="lead"><svg viewBox="0 0 24 24"><use href="#i-link"></use></svg></span>
+                    <input type="text" id="next-smtp-proxy-api" name="next-smtp-proxy-api"></div></div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-user">用户名</label><input type="text" id="next-smtp-proxy-user" name="next-smtp-proxy-user"></div>
+                  <div class="field"><label for="next-smtp-proxy-password">密码</label><input type="text" id="next-smtp-proxy-password" name="next-smtp-proxy-password"></div>
+                </div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-host">SMTP 服务器</label><input type="text" id="next-smtp-proxy-host" name="next-smtp-proxy-host" value="smtp-mail.outlook.com"></div>
+                  <div class="field"><label for="next-smtp-proxy-port">端口</label><input type="number" id="next-smtp-proxy-port" name="next-smtp-proxy-port" value="587"></div>
+                </div>
+                <div class="grid-2">
+                  <div class="field"><label for="next-smtp-proxy-form-name">发送人名称</label><input type="text" id="next-smtp-proxy-form-name" name="next-smtp-proxy-form-name" value="Air724UG"></div>
+                  <div class="field"><label for="next-smtp-proxy-to-email">收件人邮箱</label><input type="text" id="next-smtp-proxy-to-email" name="next-smtp-proxy-to-email"></div>
+                </div>
+                <div class="field"><label for="next-smtp-proxy-subject">邮件主题</label><input type="text" id="next-smtp-proxy-subject" name="next-smtp-proxy-subject" value="来自 Air724UG 的通知"></div>
+              </div>
+            </div>
+
+            <!-- 语音发送 -->
+            <div class="notify-item">
+              <div class="notify-head">
+                <span class="nlabel"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-mic"></use></svg></span> 企业微信语音消息发送</span>
+                <label class="switch"><input type="checkbox" name="voice-send-enable" id="voice-send-enable"><span class="track"></span></label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- 右侧预览 / 生成 -->
+  <aside class="sidebar">
+    <div class="panel">
+      <div class="panel-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-code"></use></svg></span> 生成 &amp; 预览</div>
+      <div class="panel-body">
+        <label class="sub" for="preview" style="display:block;margin-bottom:.5rem">Lua 明文预览（实时更新）</label>
+        <textarea class="preview" id="preview" readonly placeholder="填写左侧配置后自动生成…"></textarea>
+        <div class="actions">
+          <button class="btn btn-primary btn-block" id="downloadBtn"><svg viewBox="0 0 24 24"><use href="#i-download"></use></svg> 下载 config.bin</button>
+          <div class="grid-2">
+            <button class="btn btn-outline" id="copyBtn"><svg viewBox="0 0 24 24"><use href="#i-copy"></use></svg> 复制 Lua</button>
+            <button class="btn btn-ghost" id="copyBinBtn"><svg viewBox="0 0 24 24"><use href="#i-copy"></use></svg> 复制密文</button>
+          </div>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+
+    <div class="panel tips">
+      <div class="panel-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-info"></use></svg></span> 提示</div>
+      <div class="panel-body">
+        <ul>
+          <li>建议先在测试设备上验证配置，再用于正式环境。</li>
+          <li>如需关闭某项功能，取消勾选或留空对应字段即可。</li>
+          <li>本机号码仅在 SIM 未报告号码时作为备用显示。</li>
+          <li>下载的 <code>config.bin</code> 请直接复制到 U 盘根目录，不要编辑。</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer class="footer">Air724UG 离线配置生成器 · 纯前端实现，数据不出本机</footer>
+
+<!-- 帮助弹窗 -->
+<div class="modal-mask" id="helpModal">
+  <div class="modal">
+    <div class="modal-head"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-help"></use></svg></span> 使用说明
+      <button class="x" id="helpClose" aria-label="关闭"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div class="modal-body">
+      <ol>
+        <li>先在右侧（本页「通知配置」）勾选你要用的推送渠道，再填写对应参数；未勾选渠道在生成时会强制清空对应参数。</li>
+        <li>点击 <span class="kbd">下载 config.bin</span> 即可生成加密配置。</li>
+        <li>下载后不要用任何编辑器打开它，直接复制到 U 盘根目录。</li>
+        <li>如设备日志出现 <span class="code">decode failed ... -44</span>，通常是 Base64 被插入换行/空格/BOM；请重新生成并确保写入文件未被改动。</li>
+        <li>短信/来电控制（需先配置 <span class="code">短信控制白名单号码</span>，每行一个号码）：
+          <div style="margin-top:.4rem">
+            <div><span class="code">CALL,10086</span> 拨打电话</div>
+            <div><span class="code">SMS,10086,查询流量</span> 发送短信</div>
+            <div><span class="code">CCFC,?</span> 查询所有呼转状态</div>
+            <div><span class="code">CCFC,18888888888</span> 设置无条件呼转</div>
+            <div><span class="code">CCFC,0</span> 关闭所有呼转</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/crypto.js"></script>
+<script src="assets/js/config-builder.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

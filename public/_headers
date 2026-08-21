@@ -1,0 +1,7 @@
+# Cloudflare Pages 静态资源缓存策略
+/assets/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# 不缓存 HTML，保证配置器逻辑/资源更新后立即生效
+/*
+  Cache-Control: public, max-age=0, must-revalidate

@@ -1,0 +1,11 @@
+# 可选：语音上传 Worker（替代原 upload_media.php）
+# 部署：cd worker && npx wrangler deploy
+# 部署前需先创建 R2 桶，并把下面的 bucket_name 改成实际名称。
+
+name = "air724-voice-upload"
+main = "upload-worker.js"
+compatibility_date = "2025-08-01"
+
+[[r2_buckets]]
+binding = "VOICE_BUCKET"
+bucket_name = "air724-voices"

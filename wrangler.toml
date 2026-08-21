@@ -1,0 +1,17 @@
+name = "air724-config-generator"
+compatibility_date = "2025-08-01"
+
+# 纯静态站点：以 Workers 静态资源（Static Assets）方式部署。
+# CI / 本地统一使用：npx wrangler deploy
+# 访问地址：https://air724-config-generator.<你的子域>.workers.dev
+
+[assets]
+directory = "./public"
+not_found_handling = "single-page-application"
+
+# 说明：
+# - 站点全部文件在 public/ 目录（index.html + assets/）。
+# - public/_headers 由静态资源自动生效（缓存策略）。
+#
+# 语音上传接口（原 upload_media.php）需要服务端能力，已单独放在 worker/ 目录，
+# 如需启用：cd worker && npx wrangler deploy（需绑定 R2 桶，见 worker/wrangler.toml）。
